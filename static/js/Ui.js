@@ -1,12 +1,12 @@
 class Ui {
 
-    displayError(str) {
+    displayTop(str) {
         document.getElementById('top').innerHTML = str
     }
 
-    endLogin(str) {
-        document.getElementById('loginwrap').remove()
+    endLogin(str, player) {
+        document.getElementById('cover').remove()
         document.getElementById('top').innerHTML = str
-        console.log(net.loggedIn)
+        game.createChekers(player)
     }
 }

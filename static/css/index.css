@@ -1,62 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+:root{
+    --green: rgb(15, 226, 8);
+    --darkgreen:rgb(0, 88, 22);
+}
+
 *{
     margin:0;
     padding:0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+input:focus{
+    outline: none;
+}
+
+#cover{
+    position:absolute;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.45);
+    left:0;
+    top:0;
 }
 #top {
+    z-index:43232;
     position: absolute;
-    height: 100px;
+    height: 80px;
     width: 100%;
+    border-bottom: 1px solid var(--green);
+    display: flex;
+    background-color: var(--darkgreen);
+    align-items: center;
+    padding-left:50px;
+    color: var(--green);
+    font-size: 25px;
 }
 
 #loginwrap {
     position: absolute;
     width: min-content;
-    height: 300px;
+    height: 310px;
     left: 50%;
     top:50%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-flow: column wrap;
     align-items: center;
-    justify-content: center;
-    color:green;
+    justify-content: space-evenly;
+    border:2px solid var(--green);
+    padding:10px 70px 20px 70px;
+    border-radius: 30px;
 }
 
 #loginwrap>*{
     margin:10px;
-    color:green;
     text-align: center;
+    color:var(--green);
+}
 
+#loginwrap>h1{
+    font-size:40px;
 }
 
 #txt{
-    width:195px;
-    height:27px;
+    width:250px;
+    height:45px;
     background-color: transparent;
-    border:1px solid green;
+    border:1px solid var(--green);
     border-radius: 30px;
+    color: azure;
+    font-size: 30px;
 }
 
 #login{
-    width:200px;
-    height:30px;
-    border:1px solid green;
-    border-radius: 30px;
+    width:250px;
+    height:45px;
+    border:1px solid var(--green);
+    border-radius: 214343234%;
     display: flex;
+    background-color: var(--green);
     justify-content: center;
     align-items: center;
     font-weight: bold;
     user-select: none;
+    color: black;
+    font-size: 28px;
 }
 
 #reset{
-    width:200px;
-    user-select: none;
-    height:30px;
-    border:1px solid green;
-    border-radius: 30px;
+    width:250px;
+    height:45px;
+    border:1px solid var(--green);
+    border-radius: 214343234%;
     display: flex;
+    background-color: var(--green);
     justify-content: center;
     align-items: center;
     font-weight: bold;
+    user-select: none;
+    color: black;
+    font-size: 28px;
 }

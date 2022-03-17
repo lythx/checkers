@@ -1,20 +1,34 @@
 class Net {
-
     async login() {
         const login = document.getElementById('txt').value
         const body = JSON.stringify({ login })
         console.log(body)
-        const response = await fetch('/addlogin', { method: 'POST', body })
-        if (response == 'TOO MANY LOGGED IN') {
-            ui.displayError('Already 2 players')
+        const response = await fetch('/addlogin', {
+            method: 'POST',
+            body,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        const data = await response.json()
+        if (data.status == 'TOO MANY LOGGED IN') {
+            ui.displayTop('Already 2 players')
             return
         }
-        if (response == 'NAME TAKEN') {
-            ui.displayError('Name already taken')
+        if (data.status == 'NAME TAKEN') {
+            ui.displayTop('Name already taken')
             return
         }
-        if (response == 'OK')
-            ui.endLogin(login)
-        console.log(response)
+        if (data.status == 'OK')
+            ui.endLogin(login, data.player)
+        console.log(data.status)
+    }
+    async reset() {
+        const response = await fetch('/reset', { method: 'POST' })
+        console.log(await response)
+        const data = await response.json()
+        if (data.status == 'OK') {
+            ui.displayTop('Reset')
+        }
     }
 }

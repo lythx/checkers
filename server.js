@@ -11,15 +11,23 @@ app.post('/addlogin', (req, res) => {
     console.log(loggedIn)
     console.log(req.body)
     if (loggedIn.length > 1) {
-        res.send('TOO MANY LOGGED IN')
+        res.send(JSON.stringify({ status: 'TOO MANY LOGGED IN' }))
         return
     }
     if (loggedIn[0] == req.body.login) {
-        res.send('NAME TAKEN')
+        res.send(JSON.stringify({ status: 'NAME TAKEN' }))
         return
     }
     loggedIn.push(req.body.login)
-    res.send('OK')
+    res.send(JSON.stringify({
+        status: 'OK',
+        player: loggedIn.length
+    }))
+})
+
+app.post('/reset', (req, res) => {
+    loggedIn = []
+    res.send({ status: 'OK' })
 })
 
 app.listen(PORT, () => {
