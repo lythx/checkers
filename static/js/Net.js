@@ -1,4 +1,5 @@
 class Net {
+
     async login() {
         const login = document.getElementById('txt').value
         const body = JSON.stringify({ login })
@@ -23,12 +24,23 @@ class Net {
             ui.endLogin(login, data.player)
         console.log(data.status)
     }
+
     async reset() {
         const response = await fetch('/reset', { method: 'POST' })
-        console.log(await response)
         const data = await response.json()
         if (data.status == 'OK') {
             ui.displayTop('Reset')
         }
+    }
+
+    fetchPlayerCount(playerName) {
+        const interval = setInterval(async () => {
+            const response = await fetch('/getplayercount', { method: 'POST' })
+            const data = await response.json()
+            if (data.count == 2) {
+                clearInterval(interval)
+                ui.startGame(playerName, 1)
+            }
+        }, 500);
     }
 }

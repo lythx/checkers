@@ -30,6 +30,10 @@ app.post('/reset', (req, res) => {
     res.send({ status: 'OK' })
 })
 
+app.post('/getplayercount', (req, res) => {
+    res.send(JSON.stringify({ count: loggedIn.length }))
+})
+
 app.listen(PORT, () => {
     console.log(`server start on port ${PORT}`)
 })
