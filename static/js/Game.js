@@ -80,6 +80,7 @@ class Game {
                     checker.position.x = (j * tilesize) - (tilesize * 4 - tilesize / 2);
                     checker.position.z = (i * tilesize) - (tilesize * 4 - tilesize / 2);
                     checker.position.y = 3
+                    checker.name = `checker${i}${j}`
                     this.redCheckers.add(checker)
                 }
                 else if (tile == 1) {
@@ -87,6 +88,7 @@ class Game {
                     checker.position.x = (j * tilesize) - (tilesize * 4 - tilesize / 2);
                     checker.position.z = (i * tilesize) - (tilesize * 4 - tilesize / 2);
                     checker.position.y = 3
+                    checker.name = `checker${i}${j}`
                     this.whiteCheckers.add(checker);
                 }
             }
@@ -101,12 +103,13 @@ class Game {
         this.mouseVector = new THREE.Vector2()
 
         document.onmousedown = (e) => {
+            if (document.getElementById('cover'))
+                return
             this.mouseVector.x = (e.clientX / window.innerWidth) * 2 - 1;
             this.mouseVector.y = -(e.clientY / window.innerHeight) * 2 + 1;
             this.raycaster.setFromCamera(this.mouseVector, this.camera);
             const intersects = this.raycaster.intersectObjects(this.player == 1 ? this.whiteCheckers.children : this.redCheckers.children);
             if (intersects.length > 0) {
-                console.log(intersects[0].object)
                 this.handleCheckerClick(intersects[0].object)
                 return
             }
@@ -122,14 +125,44 @@ class Game {
     handleCheckerClick(checker) {
         if (this.checkerSelected) {
             this.checkerSelected.material.color.setHex(this.player == 2 ? 0xff0000 : 0xffffff)
+            this.checkerSelected = null
+            return
         }
         this.checkerSelected = checker
         checker.material.color.setHex(0xffff00)
     }
 
     handleMove(tile) {
-        new TWEEN.Tween(this.checkerSelected.position)
-            .to({ x: tile.position.x, z: tile.position.z }, 500)
+        net.sendMove(this.checkerSelected.position, { x: tile.position.x, y: 3, z: tile.position.z }, this.checkerSelected.name)
+        this.animateMove({ from: this.checkerSelected.position, to: tile.position })
+        this.checkerSelected.material.color.setHex(this.player == 2 ? 0xff0000 : 0xffffff)
+        this.checkerSelected = null
+        ui.opponentMove()
+        net.getMove(this.player)
+    }
+
+    getIndexFromPosition(pos) {
+        return { x: (pos.x + 42) / 12, y: 3, z: (pos.z + 42) / 12 }
+    }
+
+    animateMove(move) {
+        if (move.name)
+            move.from = this.getObjectByName(move.name).position
+        console.log('================')
+        console.table(move.from)
+        console.table({ x: move.to.x, y: 3, z: move.to.z })
+        new TWEEN.Tween(move.from)
+            .to({ x: move.to.x, y: 3, z: move.to.z }, 500)
             .start()
+    }
+
+    getObjectByName(name) {
+        console.log(this.whiteCheckers.children[0].name)
+        for (const e of this.whiteCheckers.children)
+            if (e.name == name)
+                return e
+        for (const e of this.redCheckers.children)
+            if (e.name == name)
+                return e
     }
 }

@@ -6,3 +6,5 @@ window.onload = () => {
     net = new Net();
     ui = new Ui();
 }
+
+console.log('PENIS')

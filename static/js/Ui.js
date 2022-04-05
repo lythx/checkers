@@ -5,25 +5,38 @@ class Ui {
     }
 
     endLogin(playerName, playerNumber) {
+        console.log(playerNumber)
         let cover = document.getElementById('cover')
-        if (playerNumber == 1) {
-            cover.innerHTML = ''
-            let p = document.createElement('p')
-            p.innerHTML = 'Oczekiwanie na drugiego gracza...'
-            cover.appendChild(p)
-            let loading = document.createElement('div')
-            loading.classList.add('lds-default')
-            loading.innerHTML = `<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>`
-            cover.appendChild(loading)
-            net.fetchPlayerCount(playerName)
-            return
-        }
-        this.startGame(playerName, playerNumber)
+        cover.innerHTML = ''
+        let p = document.createElement('p')
+        p.innerHTML = 'Oczekiwanie na drugiego gracza...'
+        cover.appendChild(p)
+        let loading = document.createElement('div')
+        loading.classList.add('lds-default')
+        loading.innerHTML = `<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>`
+        cover.appendChild(loading)
+        net.fetchPlayerCount(playerName, playerNumber)
     }
 
-    startGame(playerName, playerNumber) {
+    opponentMove() {
+        let cover = document.createElement('div')
+        cover.id = 'cover'
+        document.body.appendChild(cover)
+        let p = document.createElement('p')
+        p.innerHTML = 'Ruch drugiego gracza'
+        cover.appendChild(p)
+        let loading = document.createElement('div')
+        loading.classList.add('lds-default')
+        loading.innerHTML = `<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>`
+        cover.appendChild(loading)
+    }
+
+    startGame(playerName) {
         document.getElementById('cover').remove()
         document.getElementById('top').innerHTML = playerName
-        game.createChekers(playerNumber)
+    }
+
+    yourMove() {
+        document.getElementById('cover').remove()
     }
 }
