@@ -148,16 +148,12 @@ class Game {
     animateMove(move) {
         if (move.name)
             move.from = this.getObjectByName(move.name).position
-        console.log('================')
-        console.table(move.from)
-        console.table({ x: move.to.x, y: 3, z: move.to.z })
         new TWEEN.Tween(move.from)
             .to({ x: move.to.x, y: 3, z: move.to.z }, 500)
             .start()
     }
 
     getObjectByName(name) {
-        console.log(this.whiteCheckers.children[0].name)
         for (const e of this.whiteCheckers.children)
             if (e.name == name)
                 return e

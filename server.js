@@ -37,7 +37,7 @@ app.post('/getplayercount', (req, res) => {
 })
 
 app.post('/sendmove', (req, res) => {
-    lastMove = { from: req.body.oldPos, to: req.body.newPos, name: req.body.name }
+    lastMove = { to: req.body.newPos, name: req.body.name }
     console.log(lastMove)
     playerMove = playerMove == 1 ? 2 : 1
     res.send(JSON.stringify({ status: 'OK' }))
@@ -48,7 +48,7 @@ app.post('/getmove', (req, res) => {
         res.send(JSON.stringify({ status: 'opponent' }))
         return
     }
-    res.send(JSON.stringify({ status: 'you', from: lastMove.from, to: lastMove.to, name: lastMove.name }))
+    res.send(JSON.stringify({ status: 'you', to: lastMove.to, name: lastMove.name }))
 })
 
 app.listen(PORT, () => {

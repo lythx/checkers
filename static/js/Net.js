@@ -66,7 +66,7 @@ class Net {
                 clearInterval(interval)
                 ui.yourMove()
                 console.log(await data)
-                game.animateMove({ from: data.from, to: data.to, name: data.name })
+                game.animateMove({ to: data.to, name: data.name })
             }
         }, 500);
     }
