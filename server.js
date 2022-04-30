@@ -8,6 +8,8 @@ app.use(express.json())
 let loggedIn = []
 let lastMove = {}
 let playerMove = 1
+let winner
+let checkers
 
 app.post('/addlogin', (req, res) => {
     if (loggedIn.length > 1) {
@@ -38,17 +40,26 @@ app.post('/getplayercount', (req, res) => {
 
 app.post('/sendmove', (req, res) => {
     lastMove = { to: req.body.newPos, name: req.body.name }
-    console.log(lastMove)
     playerMove = playerMove == 1 ? 2 : 1
+    checkers = req.body.checkers
     res.send(JSON.stringify({ status: 'OK' }))
 })
 
 app.post('/getmove', (req, res) => {
+    if (req.body.player == winner) {
+        res.send(JSON.stringify({ status: 'win' }))
+        return
+    }
     if (req.body.player != playerMove) {
         res.send(JSON.stringify({ status: 'opponent' }))
         return
     }
-    res.send(JSON.stringify({ status: 'you', to: lastMove.to, name: lastMove.name }))
+    res.send(JSON.stringify({ status: 'you', to: lastMove.to, name: lastMove.name, checkers }))
+})
+
+app.post('/sendlose', (req, res) => {
+    winner = loggedIn.indexOf(loggedIn.find(a => a != req.body.player)) + 1
+    res.send(JSON.stringify({ status: 'OK' }))
 })
 
 app.listen(PORT, () => {

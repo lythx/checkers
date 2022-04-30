@@ -10,6 +10,7 @@ class Game {
     whiteCheckers
     redCheckers
     checkerSelected
+    possibleMoves = []
 
     constructor() {
         this.scene = new THREE.Scene();
@@ -57,6 +58,7 @@ class Game {
                 const cube = new Tile(color, tilesize);
                 cube.position.x = (i * tilesize) - (tilesize * 4 - tilesize / 2);
                 cube.position.z = (j * tilesize) - (tilesize * 4 - tilesize / 2);
+                cube.name = `tile${i}${j}`;
                 ((i + j) % 2 == 1) ? this.blackTiles.add(cube) : this.whiteTiles.add(cube)
             }
         }
@@ -115,7 +117,9 @@ class Game {
             }
             if (this.checkerSelected) {
                 const tileIntersects = this.raycaster.intersectObjects(this.blackTiles.children)
-                if (tileIntersects.length > 0) {
+                if (tileIntersects.length > 0 && this.possibleMoves.some(a => a == tileIntersects[0].object.name)) {
+                    tileIntersects[0].object.material.color.setHex(0xfffffff)
+                    console.log(tileIntersects[0].object.name)
                     this.handleMove(tileIntersects[0].object)
                 }
             }
@@ -130,10 +134,18 @@ class Game {
         }
         this.checkerSelected = checker
         checker.material.color.setHex(0xffff00)
+        this.displayPossibleMoves()
     }
 
     handleMove(tile) {
-        net.sendMove(this.checkerSelected.position, { x: tile.position.x, y: 3, z: tile.position.z }, this.checkerSelected.name)
+        this.updateCheckersArray(
+            this.getIndexFromPosition(this.checkerSelected.position),
+            this.getIndexFromPosition(tile.position))
+        net.sendMove(
+            this.checkerSelected.position,
+            { x: tile.position.x, y: 3, z: tile.position.z },
+            this.checkerSelected.name,
+            this.checkers)
         this.animateMove({ from: this.checkerSelected.position, to: tile.position })
         this.checkerSelected.material.color.setHex(this.player == 2 ? 0xff0000 : 0xffffff)
         this.checkerSelected = null
@@ -142,7 +154,7 @@ class Game {
     }
 
     getIndexFromPosition(pos) {
-        return { x: (pos.x + 42) / 12, y: 3, z: (pos.z + 42) / 12 }
+        return { x: (pos.x + 42) / 12, y: (pos.z + 42) / 12 }
     }
 
     animateMove(move) {
@@ -160,5 +172,76 @@ class Game {
         for (const e of this.redCheckers.children)
             if (e.name == name)
                 return e
+    }
+
+    updateCheckersArray(oldPos, newPos) {
+        console.log(newPos)
+        this.checkers[oldPos.y][oldPos.x] = 0
+        this.checkers[newPos.y][newPos.x] = this.player
+    }
+
+    setCheckers(checkers) {
+        this.checkers = checkers
+        console.table(checkers)
+    }
+
+    displayPossibleMoves() {
+        const pos = this.getIndexFromPosition(this.checkerSelected.position)
+        const x = pos.x
+        const y = pos.y
+        let moves = []
+        let arr = [this.checkMoves(y, x)]
+        while (true) {
+            moves.push(arr)
+            arr = []
+            for (const e of arr)
+                arr.push(this.checkMoves(e.y, e.x))
+            if (arr.length == 0)
+                break
+        }
+        moves = moves.flat(10)
+        console.log(this.blackTiles.children)
+        let tiles = this.blackTiles.children
+        for (const m of moves) {
+            let t = tiles.find(a => a.name == `tile${m.x}${m.y}`)
+            t.material.color.setHex(0xaaff00)
+            this.possibleMoves.push(`tile${m.x}${m.y}`)
+        }
+    }
+
+    checkMoves(y, x) {
+        const c = this.checkers
+        let arr = []
+        if (this.player == 1) {
+            console.log('e')
+            if (c?.[y - 1]?.[x - 1] == 0) {
+                arr.push({ y: y - 1, x: x - 1 })
+            }
+            else if (c?.[y - 1]?.[x - 1] == 2 && c?.[y - 2]?.[x - 2] == 0) {
+                arr.push({ y: y - 2, x: x - 2 })
+            }
+            if (c?.[y - 1]?.[x + 1] == 0) {
+                arr.push({ y: y - 1, x: x + 1 })
+            }
+            else if (c?.[y - 1]?.[x + 1] == 2 && c?.[y - 2]?.[x + 2] == 0) {
+                arr.push({ y: y - 2, x: x + 2 })
+            }
+        }
+        else {
+            if (c?.[y + 1]?.[x - 1] == 0) {
+                arr.push({ y: y + 1, x: x - 1 })
+            }
+            else if (c?.[y + 1]?.[x - 1] == 2 && c?.[y + 2]?.[x - 2] == 0) {
+                arr.push({ y: y + 2, x: x - 2 })
+            }
+            if (c?.[y + 1]?.[x + 1] == 0) {
+                arr.push({ y: y + 1, x: x + 1 })
+            }
+            else if (c?.[y - 1]?.[x + 1] == 2 && c?.[y - 2]?.[x + 2] == 0) {
+                arr.push({ y: y + 2, x: x + 2 })
+            }
+        }
+        console.log(arr)
+        return arr
     }
 }
