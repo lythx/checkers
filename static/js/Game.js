@@ -129,24 +129,18 @@ class Game {
     }
 
     async handleMove(move) {
-        this.removeSelection()
+        this.updateCheckersArray(
+            move.getChecker().getPos(),
+            move.getTile().getPos())
+        console.log(this.checkers)
         await this.moves.moveChecker(move)
-
-
-        // this.updateCheckersArray(
-        //     this.selectedChecker.getPos(),
-        //     tile.getPos())
-        /*
-    net.sendMove(
-        this.selectedChecker.getId(),
-        tile.getId(),
-        this.checkers)
-    this.animateMove({ from: this.selectedChecker.position, to: tile.position })
-    this.selectedChecker.material.color.setHex(this.player == 2 ? 0xff0000 : 0xffffff)
-    this.selectedChecker = null
-    ui.opponentMove()
-    net.getMove(this.player)
-    */
+        net.sendMove(
+            move.getChecker().getCheckerId(),
+            move.getTile().getTileId(),
+            this.checkers)
+        this.removeSelection()
+        ui.opponentMove()
+        net.getMove(this.player)
     }
 
     getIndexFromPosition(pos) {
@@ -170,9 +164,35 @@ class Game {
                 return e
     }
 
+    async animateOpponentMove(checkerId, tileId) {
+        return new Promise(async (resolve) => {
+            let checker
+            for (const row of this.checkers) {
+                if (row.some(a => a?.getCheckerId() === checkerId)) {
+                    checker = row.find(a => a?.getCheckerId() === checkerId)
+                    break
+                }
+            }
+            let tile
+            for (const row of this.tiles) {
+                if (row.some(a => a?.getTileId() === tileId)) {
+                    tile = row.find(a => a?.getTileId() === tileId)
+                    break
+                }
+            }
+            console.log(checker, tile)
+            await this.moves.moveChecker(new Move(checker, tile, false))
+            resolve()
+        })
+    }
+
     updateCheckersArray(oldPos, newPos) {
-        this.checkers[oldPos.x][oldPos.y] = null
-        this.checkers[newPos.x][newPos.y] = this.selectedChecker
+        console.log(oldPos)
+        console.log(newPos)
+        console.log(this.selectedChecker)
+        this.checkers[oldPos.y][oldPos.x] = null
+        this.checkers[newPos.y][newPos.x] = this.selectedChecker
+        console.table(this.checkers)
     }
 
     setCheckers(checkers) {

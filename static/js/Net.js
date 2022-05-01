@@ -71,7 +71,7 @@ class Net {
             if (data.status == 'you') {
                 clearInterval(interval)
                 ui.yourMove()
-                game.animateMove({ to: data.to, name: data.name })
+                await game.animateOpponentMove(data.checkerId, data.tileId)
                 game.setCheckers(data.checkers)
             }
             else if (data.status == 'win') {

@@ -3,7 +3,7 @@ const app = express()
 const PORT = 3000
 
 app.use(express.static('static'))
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 
 let loggedIn = []
 let lastMove = {}
@@ -48,7 +48,6 @@ app.post('/sendmove', (req, res) => {
 })
 
 app.post('/getmove', (req, res) => {
-    console.log(req.body)
     if (req.body.player == winner) {
         res.send(JSON.stringify({ status: 'win' }))
         return
@@ -57,12 +56,10 @@ app.post('/getmove', (req, res) => {
         res.send(JSON.stringify({ status: 'opponent' }))
         return
     }
-    res.send(JSON.stringify({ status: 'you', to: lastMove.to, name: lastMove.name, checkers }))
+    res.send(JSON.stringify({ status: 'you', checkerId: lastMove.checkerId, tileId: lastMove.tileId, checkers }))
 })
 
 app.post('/sendlose', (req, res) => {
-    console.log('+++++++++++++++++++++++++++++')
-    console.log(req.body)
     winner = loggedIn.indexOf(loggedIn.find(a => a != req.body.player)) + 1
     res.send(JSON.stringify({ status: 'OK' }))
 })
