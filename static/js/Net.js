@@ -42,13 +42,15 @@ class Net {
             if (data.count == 2) {
                 clearInterval(interval)
                 if (playerNumber == 2) {
-                    game.createChekers(playerNumber)
+                    game.setPlayer(playerNumber)
+                    game.generateCheckers()
                     ui.startGame(playerName)
                     ui.opponentMove()
                     this.getMove(playerNumber)
                 }
                 else {
-                    game.createChekers(playerNumber)
+                    game.setPlayer(playerNumber)
+                    game.generateCheckers()
                     ui.startGame(playerName)
                 }
             }
@@ -79,8 +81,8 @@ class Net {
         }, 500);
     }
 
-    async sendMove(oldPos, newPos, name, checkers) {
-        const body = JSON.stringify({ oldPos, newPos, name, checkers })
+    async sendMove(checkerId, tileId, checkers) {
+        const body = JSON.stringify({ checkerId, tileId, checkers })
         const response = await fetch('/sendmove', {
             method: 'POST',
             body,

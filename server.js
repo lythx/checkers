@@ -31,6 +31,8 @@ app.post('/reset', (req, res) => {
     loggedIn = []
     lastMove = {}
     playerMove = 1
+    winner = null
+    checkers = null
     res.send({ status: 'OK' })
 })
 
@@ -39,13 +41,14 @@ app.post('/getplayercount', (req, res) => {
 })
 
 app.post('/sendmove', (req, res) => {
-    lastMove = { to: req.body.newPos, name: req.body.name }
-    playerMove = playerMove == 1 ? 2 : 1
+    lastMove = { checkerId: req.body.checkerId, tileId: req.body.tileId }
+    playerMove = playerMove === 1 ? 2 : 1
     checkers = req.body.checkers
     res.send(JSON.stringify({ status: 'OK' }))
 })
 
 app.post('/getmove', (req, res) => {
+    console.log(req.body)
     if (req.body.player == winner) {
         res.send(JSON.stringify({ status: 'win' }))
         return
@@ -58,6 +61,8 @@ app.post('/getmove', (req, res) => {
 })
 
 app.post('/sendlose', (req, res) => {
+    console.log('+++++++++++++++++++++++++++++')
+    console.log(req.body)
     winner = loggedIn.indexOf(loggedIn.find(a => a != req.body.player)) + 1
     res.send(JSON.stringify({ status: 'OK' }))
 })
