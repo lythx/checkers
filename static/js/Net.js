@@ -42,14 +42,14 @@ class Net {
             if (data.count == 2) {
                 clearInterval(interval)
                 if (playerNumber == 2) {
-                    game.setPlayer(playerNumber)
+                    game.start(playerNumber)
                     game.generateCheckers()
                     ui.startGame(playerName)
                     ui.opponentMove()
                     this.getMove(playerNumber)
                 }
                 else {
-                    game.setPlayer(playerNumber)
+                    game.start(playerNumber)
                     game.generateCheckers()
                     ui.startGame(playerName)
                 }

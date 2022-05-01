@@ -34,6 +34,11 @@ class Checker extends THREE.Mesh {
         this.position.z = (y * this.tilesize) - (this.tilesize * 4 - this.tilesize / 2);
     }
 
+    updatePos() {
+        this.x = (this.position.x + 42) / 12
+        this.y = (this.position.z + 42) / 12
+    }
+
     getPos() {
         return { x: this.x, y: this.y }
     }

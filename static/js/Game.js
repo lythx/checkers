@@ -14,7 +14,6 @@ class Game {
     whiteTiles = new THREE.Object3D()
     blackTiles = new THREE.Object3D()
     selectedChecker
-    selectedTiles = []
     moves
 
     constructor() {
@@ -40,12 +39,13 @@ class Game {
         this.renderer.render(this.scene, this.camera);
     }
 
-    setPlayer(player) {
+    start(player) {
         this.player = player
         if (this.player === 2) {
             this.camera.position.set(0, 50, -100)
             this.camera.lookAt(this.scene.position)
         }
+        this.moves = new Moves(this.player, this.tiles)
     }
 
     generateBoard = () => {
@@ -98,16 +98,11 @@ class Game {
         }
         if (this.selectedChecker) {
             const tileIntersects = this.raycaster.getIntersects(e, this.blackTiles.children)
-            if (tileIntersects[0].object.getSelected()) {
-                this.moveChecker(tileIntersects[0].object)
-            }
-        }
-    }
+            if (tileIntersects.length > 0)
+                if (this.moves.getMoves().some(a => a.getTile() === tileIntersects[0].object))
+                    this.handleMove(this.moves.getMoves().find(a => a.getTile() === tileIntersects[0].object))
 
-    resetPossibleMoves() {
-        for (const e of this.possibleMoves)
-            e.unselect()
-        this.possibleMoves = []
+        }
     }
 
     selectChecker(checker) {
@@ -119,32 +114,39 @@ class Game {
             this.removeSelection()
         this.selectedChecker = checker
         this.selectedChecker.select()
-        this.moves = new Moves(this.selectedChecker.getPos(), this.checkers, this.player)
-        this.displayPossibleMoves()
+        this.moves.calculateFirstMove(this.selectedChecker, this.checkers, this.tiles)
+        console.log(this.moves.getMoves())
+        for (const m of this.moves.getMoves())
+            m.getTile().select()
     }
 
     removeSelection() {
         this.selectedChecker.unselect()
         this.selectedChecker = null
-        for (const tile of this.selectedTiles)
-            tile.unselect()
-        this.selectedTiles = []
-        this.moves = null
+        for (const m of this.moves.getMoves())
+            m.getTile().unselect()
+        this.moves.reset()
     }
 
-    moveChecker(tile) {
-        this.updateCheckersArray(
-            this.selectedChecker.getPos(),
-            tile.getPos())
-        net.sendMove(
-            this.selectedChecker.getId(),
-            tile.getId(),
-            this.checkers)
-        this.animateMove({ from: this.selectedChecker.position, to: tile.position })
-        this.selectedChecker.material.color.setHex(this.player == 2 ? 0xff0000 : 0xffffff)
-        this.selectedChecker = null
-        ui.opponentMove()
-        net.getMove(this.player)
+    async handleMove(move) {
+        this.removeSelection()
+        await this.moves.moveChecker(move)
+
+
+        // this.updateCheckersArray(
+        //     this.selectedChecker.getPos(),
+        //     tile.getPos())
+        /*
+    net.sendMove(
+        this.selectedChecker.getId(),
+        tile.getId(),
+        this.checkers)
+    this.animateMove({ from: this.selectedChecker.position, to: tile.position })
+    this.selectedChecker.material.color.setHex(this.player == 2 ? 0xff0000 : 0xffffff)
+    this.selectedChecker = null
+    ui.opponentMove()
+    net.getMove(this.player)
+    */
     }
 
     getIndexFromPosition(pos) {
@@ -178,15 +180,19 @@ class Game {
     }
 
     displayPossibleMoves() {
-        for (const row of this.tiles) {
-            for (const tile of row) {
-                if (this.moves.getMoves().some(a =>
-                    a.getDestination().x === tile.getPos().x && a.getDestination().y === tile.getPos().y)) {
-                    tile.select()
-                    this.selectedTiles.push(tile)
-                }
-            }
-        }
+
+
+
+        /* for (const row of this.tiles) {
+             for (const tile of row) {
+                 if (this.moves.getMoves().some(a =>
+                     a.getDestination().x === tile.getPos().x && a.getDestination().y === tile.getPos().y)) {
+                     tile.select()
+                     this.selectedTiles.push(tile)
+                 }
+             }
+         }*/
+
 
         /* const pos = this.getIndexFromPosition(this.checkerSelected.position)
          const x = pos.x

@@ -1,47 +1,70 @@
 class Moves {
 
     moves = []
-    checkers
     player
+    tiles
 
-    constructor(position, checkers, player) {
-        console.log(position)
-        this.checkers = checkers
+    constructor(player, tiles) {
         this.player = player
-        this.calculate(position.x, position.y, this.checkers, this.player)
+        this.tiles = tiles
     }
 
-    calculate(x, y, c, p) {
-        let sequence = [{ x, y }]
+    calculateFirstMove(checker, checkers) {
+        const x = checker.getPos().x
+        const y = checker.getPos().y
+        const c = checkers
+        const p = this.player
         if (p === 1) {
             if (c?.[y - 1]?.[x - 1] === null)
                 this.moves.push(new Move(
-                    [...sequence, { x: x - 1, y: y - 1 }],
-                    { x: x - 1, y: y - 1 },
+                    checker,
+                    this.findTile(x - 1, y - 1),
                     false))
             if (c?.[y - 1]?.[x + 1] === null) {
                 this.moves.push(new Move(
-                    [...sequence, { x: x + 1, y: y - 1 }],
-                    { x: x + 1, y: y - 1 },
+                    checker,
+                    this.findTile(x + 1, y - 1),
                     false))
             }
         }
         else if (p === 2) {
             if (c?.[y + 1]?.[x - 1] === null)
                 this.moves.push(new Move(
-                    [...sequence, { x: x - 1, y: y + 1 }],
-                    { x: x - 1, y: y + 1 },
+                    checker,
+                    this.findTile(x - 1, y + 1),
                     false))
             if (c?.[y + 1]?.[x + 1] === null) {
                 this.moves.push(new Move(
-                    [...sequence, { x: x + 1, y: y + 1 }],
-                    { x: x + 1, y: y + 1 },
+                    checker,
+                    this.findTile(x + 1, y + 1),
                     false))
             }
         }
     }
 
+    async moveChecker(move) {
+        return new Promise((resolve) => {
+            new TWEEN.Tween(move.getChecker().position)
+                .to({ x: move.getTile().position.x, z: move.getTile().position.z }, 500)
+                .onComplete(() => {
+                    move.getChecker().updatePos()
+                    resolve()
+                })
+                .start()
+        })
+    }
+
+    findTile(x, y) {
+        for (const row of this.tiles)
+            if (row.some(a => a.getPos().x === x && a.getPos().y === y))
+                return row.find(a => a.getPos().x === x && a.getPos().y === y)
+    }
+
     getMoves() {
         return this.moves
+    }
+
+    reset() {
+        this.moves = []
     }
 }

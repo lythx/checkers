@@ -1,21 +1,21 @@
 class Move {
 
-    destination
-    sequence
+    checker
+    tile
     take
 
-    constructor(sequence, destination, take) {
-        this.sequence = sequence
-        this.destination = destination
+    constructor(checker, tile, take) {
+        this.checker = checker
+        this.tile = tile
         this.take = take
     }
 
-    getSequence() {
-        return this.sequence
+    getChecker() {
+        return this.checker
     }
 
-    getDestination() {
-        return this.destination
+    getTile() {
+        return this.tile
     }
 
     getTake() {
