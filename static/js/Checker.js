@@ -4,6 +4,7 @@ class Checker extends THREE.Mesh {
     tilesize
     player
     checkerId
+    king = false
 
     constructor(id, player, color, tilesize) {
         super()
@@ -38,5 +39,25 @@ class Checker extends THREE.Mesh {
 
     getPlayer() {
         return this.player
+    }
+
+    changeToKing() {
+        this.king = true
+        let lastRender = Date.now()
+        const render = () => {
+            if (this.scale.y > 2)
+                return
+            requestAnimationFrame(render)
+            if (Date.now() - lastRender < 50)
+                return
+            lastRender = Date.now()
+            this.scale.y += 0.2
+            this.position.y += 0.3
+        }
+        requestAnimationFrame(render)
+    }
+
+    isKing() {
+        return this.king
     }
 }

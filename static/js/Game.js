@@ -153,18 +153,33 @@ class Game {
         })
         if (move.getTake() === null) {
             await this.moves.moveChecker(move)
+            if (this.player === 1 && move.getTile().getPos().y === 0)
+                move.getChecker().changeToKing()
+            else if (this.player === 2 && move.getTile().getPos().y === 7)
+                move.getChecker().changeToKing()
             this.endMove()
         }
         else {
             await this.moves.moveChecker(move)
+            if (this.player === 1 && move.getTile().getPos().y === 0)
+                move.getChecker().changeToKing()
+            else if (this.player === 2 && move.getTile().getPos().y === 7)
+                move.getChecker().changeToKing()
             this.selectedChecker = move.getChecker()
             this.removeChecker(move.getTake())
             this.moves.calculateNextMove(move.getChecker(), this.checkers)
+            if (move.getChecker().isKing()) {
+                if (!this.moves.getMoves().some(a => a.getTake())) {
+                    this.endMove()
+                    return
+                }
+            }
             for (const e of this.moves.getMoves())
                 e.getTile().select()
             if (this.moves.getMoves().length === 0)
                 this.endMove()
         }
+
     }
 
     endMove() {
@@ -227,6 +242,10 @@ class Game {
             await this.moves.moveChecker(m)
             if (m.getTake() !== null)
                 this.removeChecker(m.getTake())
+            if (this.player === 2 && m.getTile().getPos().y === 0)
+                m.getChecker().changeToKing()
+            else if (this.player === 1 && m.getTile().getPos().y === 7)
+                m.getChecker().changeToKing()
         }
         this.checkers = checkers
     }
@@ -246,8 +265,8 @@ class Game {
         const pos = checker.getPos()
         this.checkers[pos.x][pos.y] = null
         new TWEEN.Tween(checker.position)
-            .to({ y: 100 }, 2000)
-            .easing(TWEEN.Easing.Bounce.Out)
+            .to({ y: 100 }, 1000)
+            .easing(TWEEN.Easing.Exponential.In)
             .onComplete(() => player === this.player ? this.myCheckers.remove(checker) : this.opponentCheckers.remove(checker))
             .start()
     }
