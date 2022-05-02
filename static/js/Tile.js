@@ -7,8 +7,9 @@ class Tile extends THREE.Mesh {
     selected = false
     tileId
 
-    constructor(color, tilesize) {
+    constructor(id, color, tilesize) {
         super()
+        this.tileId = id
         this.tilesize = tilesize
         this.initialColor = color
         this.geometry = new THREE.BoxGeometry(this.tilesize, 3, this.tilesize);
@@ -33,19 +34,8 @@ class Tile extends THREE.Mesh {
         return this.selected
     }
 
-    setPos(x, y) {
-        this.x = x
-        this.y = y
-        this.position.x = (x * this.tilesize) - (this.tilesize * 4 - this.tilesize / 2);
-        this.position.z = (y * this.tilesize) - (this.tilesize * 4 - this.tilesize / 2);
-    }
-
     getPos() {
-        return { x: this.x, y: this.y }
-    }
-
-    setTileId(id) {
-        this.tileId = id
+        return { x: (this.position.x + 42) / 12, y: (this.position.z + 42) / 12 }
     }
 
     getTileId() {

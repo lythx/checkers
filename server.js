@@ -3,13 +3,13 @@ const app = express()
 const PORT = 3000
 
 app.use(express.static('static'))
-app.use(express.json({ limit: '50mb' }))
+app.use(express.json())
 
 let loggedIn = []
 let lastMove = {}
 let playerMove = 1
 let winner
-let checkers
+let checkerIds
 
 app.post('/addlogin', (req, res) => {
     if (loggedIn.length > 1) {
@@ -32,7 +32,7 @@ app.post('/reset', (req, res) => {
     lastMove = {}
     playerMove = 1
     winner = null
-    checkers = null
+    checkerIds = null
     res.send({ status: 'OK' })
 })
 
@@ -41,14 +41,17 @@ app.post('/getplayercount', (req, res) => {
 })
 
 app.post('/sendmove', (req, res) => {
-    lastMove = { checkerId: req.body.checkerId, tileId: req.body.tileId }
+    lastMove = { checkerId: req.body.checkerId, steps: req.body.steps }
     playerMove = playerMove === 1 ? 2 : 1
-    checkers = req.body.checkers
+    checkerIds = req.body.checkerIds
+    console.log(lastMove)
+    console.log(checkerIds)
     res.send(JSON.stringify({ status: 'OK' }))
 })
 
 app.post('/getmove', (req, res) => {
     if (req.body.player == winner) {
+        winner = null
         res.send(JSON.stringify({ status: 'win' }))
         return
     }
@@ -56,7 +59,8 @@ app.post('/getmove', (req, res) => {
         res.send(JSON.stringify({ status: 'opponent' }))
         return
     }
-    res.send(JSON.stringify({ status: 'you', checkerId: lastMove.checkerId, tileId: lastMove.tileId, checkers }))
+    console.log(lastMove.steps)
+    res.send(JSON.stringify({ status: 'you', checkerId: lastMove.checkerId, steps: lastMove.steps, checkerIds }))
 })
 
 app.post('/sendlose', (req, res) => {

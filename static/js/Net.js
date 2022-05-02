@@ -43,14 +43,12 @@ class Net {
                 clearInterval(interval)
                 if (playerNumber == 2) {
                     game.start(playerNumber)
-                    game.generateCheckers()
                     ui.startGame(playerName)
                     ui.opponentMove()
                     this.getMove(playerNumber)
                 }
                 else {
                     game.start(playerNumber)
-                    game.generateCheckers()
                     ui.startGame(playerName)
                 }
             }
@@ -71,8 +69,7 @@ class Net {
             if (data.status == 'you') {
                 clearInterval(interval)
                 ui.yourMove()
-                await game.animateOpponentMove(data.checkerId, data.tileId)
-                game.setCheckers(data.checkers)
+                game.handleOpponentMove(data.checkerId, data.steps, data.checkerIds)
             }
             else if (data.status == 'win') {
                 clearInterval(interval)
@@ -81,8 +78,8 @@ class Net {
         }, 500);
     }
 
-    async sendMove(checkerId, tileId, checkers) {
-        const body = JSON.stringify({ checkerId, tileId, checkers })
+    async sendMove(checkerId, steps, checkerIds) {
+        const body = JSON.stringify({ checkerId, steps, checkerIds })
         const response = await fetch('/sendmove', {
             method: 'POST',
             body,

@@ -4,7 +4,7 @@ class Move {
     tile
     take
 
-    constructor(checker, tile, take) {
+    constructor(checker, tile, take = null) {
         this.checker = checker
         this.tile = tile
         this.take = take

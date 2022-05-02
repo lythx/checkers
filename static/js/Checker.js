@@ -2,12 +2,13 @@ class Checker extends THREE.Mesh {
 
     initialColor
     tilesize
-    x
-    y
+    player
     checkerId
 
-    constructor(color, tilesize) {
+    constructor(id, player, color, tilesize) {
         super()
+        this.checkerId = id
+        this.player = player
         this.tilesize = tilesize
         this.initialColor = color
         this.geometry = new THREE.CylinderGeometry(5, 5, 3, 32);
@@ -27,27 +28,15 @@ class Checker extends THREE.Mesh {
         this.material.color.setHex(this.initialColor)
     }
 
-    setPos(x, y) {
-        this.x = x
-        this.y = y
-        this.position.x = (x * this.tilesize) - (this.tilesize * 4 - this.tilesize / 2);
-        this.position.z = (y * this.tilesize) - (this.tilesize * 4 - this.tilesize / 2);
-    }
-
-    updatePos() {
-        this.x = (this.position.x + 42) / 12
-        this.y = (this.position.z + 42) / 12
-    }
-
     getPos() {
-        return { x: this.x, y: this.y }
-    }
-
-    setCheckerId(id) {
-        this.checkerId = id
+        return { x: (this.position.x + 42) / 12, y: (this.position.z + 42) / 12 }
     }
 
     getCheckerId() {
         return this.checkerId
+    }
+
+    getPlayer() {
+        return this.player
     }
 }
