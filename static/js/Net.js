@@ -66,14 +66,18 @@ class Net {
                 }
             })
             const data = await response.json()
-            if (data.status == 'you') {
+            if (data.status === 'you') {
                 clearInterval(interval)
                 ui.yourMove()
                 game.handleOpponentMove(data.checkerId, data.steps, data.checkerIds)
             }
-            else if (data.status == 'win') {
+            else if (data.status === 'win') {
                 clearInterval(interval)
                 ui.displayWin()
+            }
+            else if (data.status === 'lose') {
+                clearInterval(interval)
+                ui.displayLose()
             }
         }, 500);
     }
@@ -88,6 +92,8 @@ class Net {
             }
         })
         const data = await response.json()
+        if (data.status === "win")
+            ui.displayWin()
     }
 
     sendLose() {

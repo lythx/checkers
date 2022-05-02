@@ -44,8 +44,14 @@ app.post('/sendmove', (req, res) => {
     lastMove = { checkerId: req.body.checkerId, steps: req.body.steps }
     playerMove = playerMove === 1 ? 2 : 1
     checkerIds = req.body.checkerIds
-    console.log(lastMove)
-    console.log(checkerIds)
+    if (!checkerIds.some(row => {
+        return row.some(a => a !== 1)
+    }))
+        winner = 2
+    else if (!checkerIds.some(row => {
+        return row.some(a => a !== 2)
+    }))
+        winner = 1
     res.send(JSON.stringify({ status: 'OK' }))
 })
 
@@ -55,11 +61,14 @@ app.post('/getmove', (req, res) => {
         res.send(JSON.stringify({ status: 'win' }))
         return
     }
+    if (winner) {
+        res.send(JSON.stringify({ status: 'lose' }))
+        return
+    }
     if (req.body.player != playerMove) {
         res.send(JSON.stringify({ status: 'opponent' }))
         return
     }
-    console.log(lastMove.steps)
     res.send(JSON.stringify({ status: 'you', checkerId: lastMove.checkerId, steps: lastMove.steps, checkerIds }))
 })
 
