@@ -15,7 +15,7 @@ class Ui {
         document.getElementById('covercountdown').innerHTML = str
     }
 
-    endLogin(playerName, playerNumber) {
+    awaitGame() {
         let cover = document.getElementById('cover')
         cover.innerHTML = ''
         let p = document.createElement('p')
@@ -25,7 +25,6 @@ class Ui {
         loading.classList.add('lds-default')
         loading.innerHTML = `<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>`
         cover.appendChild(loading)
-        net.fetchPlayerCount(playerName, playerNumber)
     }
 
     opponentMove() {
@@ -43,48 +42,16 @@ class Ui {
         countdown.id = "covercountdown"
         countdown.innerHTML = '30'
         cover.appendChild(countdown)
-        this.opponentMoveCountdown()
     }
 
     startGame(playerName) {
         document.getElementById('cover').remove()
         this.updateStatus(playerName)
-        this.moveCountdown()
     }
 
     yourMove() {
+        console.log('asdd')
         document.getElementById('cover').remove()
-        this.moveCountdown()
-    }
-
-    moveCountdown() {
-        this.updateTimer('30')
-        clearInterval(this.opponentCountdownInterval)
-        let i = 29
-        this.countdownInterval = setInterval(() => {
-            if (i < 0) {
-                net.sendLose()
-                clearInterval(this.moveCountdownInterval);
-                this.displayLose()
-                return
-            }
-            this.updateTimer(i)
-            i--
-        }, 1000);
-    }
-
-    opponentMoveCountdown() {
-        this.updateTimer('')
-        clearInterval(this.countdownInterval)
-        let i = 29
-        this.opponentCountdownInterval = setInterval(() => {
-            if (i < 0) {
-                clearInterval(this.opponentCountdownInterval)
-                return
-            }
-            this.updateCoverTimer(i)
-            i--
-        }, 1000);
     }
 
     displayLose() {

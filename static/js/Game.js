@@ -179,21 +179,23 @@ class Game {
             if (this.moves.getMoves().length === 0)
                 this.endMove()
         }
-
     }
 
     endMove() {
         const checkerIds = this.checkers.reduce((acc, row) => {
             return [...acc, row.map((e) => e === null ? null : e.getCheckerId())]
         }, []);
+        const checkerColors = this.checkers.reduce((acc, row) => {
+            return [...acc, row.map((e) => e === null ? null : e.getPlayer())]
+        }, []);
         net.sendMove(
             this.sequence.checkerId,
             this.sequence.steps,
-            checkerIds
+            checkerIds,
+            checkerColors
         )
         this.sequence = null
         ui.opponentMove()
-        net.getMove(this.player)
     }
 
     getObjectByName(name) {
@@ -254,10 +256,6 @@ class Game {
         const temp = this.checkers[oldPos.x][oldPos.y]
         this.checkers[oldPos.x][oldPos.y] = null
         this.checkers[newPos.x][newPos.y] = temp
-    }
-
-    setCheckers(checkers) {
-        this.checkers = checkers
     }
 
     removeChecker(checker) {

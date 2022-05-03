@@ -13,52 +13,51 @@ class Net {
             }
         })
         const data = await response.json()
-        if (data.status == 'TOO MANY LOGGED IN') {
+        if (data.status === 'TOO MANY LOGGED IN')
             ui.updateStatus('Already 2 players')
-            return
-        }
-        if (data.status == 'NAME TAKEN') {
+        else if (data.status === 'NAME TAKEN')
             ui.updateStatus('Name already taken')
-            return
-        }
-        if (data.status == 'OK') {
-            ui.endLogin(login, data.player)
+        else if (data.status === 'OK') {
+            ui.awaitGame()
             this.playerName = login
+            this.getPlayerCount(login, data.player)
         }
     }
 
     async reset() {
         const response = await fetch('/reset', { method: 'POST' })
         const data = await response.json()
-        if (data.status == 'OK') {
+        if (data.status === 'OK')
             ui.updateStatus('Reset')
-        }
     }
 
-    fetchPlayerCount(playerName, playerNumber) {
+    getPlayerCount(playerName, playerNumber) {
         const interval = setInterval(async () => {
             const response = await fetch('/getplayercount', { method: 'POST' })
             const data = await response.json()
-            if (data.count == 2) {
+            if (data.count === 2) {
                 clearInterval(interval)
-                if (playerNumber == 2) {
+                if (playerNumber === 2) {
+                    await this.startGame()
                     game.start(playerNumber)
                     ui.startGame(playerName)
                     ui.opponentMove()
-                    this.getMove(playerNumber)
+                    this.getStatus(playerNumber)
                 }
                 else {
+                    await this.startGame()
                     game.start(playerNumber)
                     ui.startGame(playerName)
+                    this.getStatus(playerNumber)
                 }
             }
         }, 500);
     }
 
-    getMove(playerNumber) {
+    getStatus(playerNumber) {
         const interval = setInterval(async () => {
             const body = JSON.stringify({ player: playerNumber })
-            const response = await fetch('/getmove', {
+            const response = await fetch('/getstatus', {
                 method: 'POST',
                 body,
                 headers: {
@@ -66,14 +65,20 @@ class Net {
                 }
             })
             const data = await response.json()
-            if (data.status === 'you') {
-                clearInterval(interval)
+            if (data.status === 'yourturn') {
                 ui.yourMove()
                 game.handleOpponentMove(data.checkerId, data.steps, data.checkerIds)
             }
+            else if (data.status === 'you')
+                ui.updateTimer(`${data.time}`)
+            else if (data.status === 'opponent')
+                ui.updateCoverTimer(`${data.time}`)
             else if (data.status === 'win') {
                 clearInterval(interval)
                 ui.displayWin()
+            }
+            else if (data.status === 'game cancelled') {
+                clearInterval(interval)
             }
             else if (data.status === 'lose') {
                 clearInterval(interval)
@@ -82,8 +87,9 @@ class Net {
         }, 500);
     }
 
-    async sendMove(checkerId, steps, checkerIds) {
-        const body = JSON.stringify({ checkerId, steps, checkerIds })
+    async sendMove(checkerId, steps, checkerIds, checkerColors) {
+        console.table(checkerColors)
+        const body = JSON.stringify({ checkerId, steps, checkerIds, checkerColors })
         const response = await fetch('/sendmove', {
             method: 'POST',
             body,
@@ -96,14 +102,14 @@ class Net {
             ui.displayWin()
     }
 
-    sendLose() {
-        const body = JSON.stringify({ player: this.playerName })
-        fetch('/sendlose', {
-            method: 'POST',
-            body,
-            headers: {
-                'Content-Type': 'application/json'
-            }
+    async startGame() {
+        return new Promise(async (resolve, reject) => {
+            resolve(await fetch('/startgame', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }))
         })
     }
 }
