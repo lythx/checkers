@@ -55,10 +55,22 @@ class Ui {
     }
 
     displayLose() {
-        this.updateStatus('you lost')
+        document.getElementById('cover').remove()
+        let cover = document.createElement('div')
+        cover.id = 'cover'
+        document.body.appendChild(cover)
+        let p = document.createElement('p')
+        p.innerHTML = 'You Lost'
+        cover.appendChild(p)
     }
 
     displayWin() {
-        this.updateStatus('you won')
+        document.getElementById('cover').remove()
+        let cover = document.createElement('div')
+        cover.id = 'cover'
+        document.body.appendChild(cover)
+        let p = document.createElement('p')
+        p.innerHTML = 'You Won'
+        cover.appendChild(p)
     }
 }

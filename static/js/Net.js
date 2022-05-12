@@ -66,8 +66,8 @@ class Net {
             })
             const data = await response.json()
             if (data.status === 'yourturn') {
-                ui.yourMove()
                 game.handleOpponentMove(data.checkerId, data.steps, data.checkerIds)
+                ui.yourMove()
             }
             else if (data.status === 'you')
                 ui.updateTimer(`${data.time}`)
@@ -81,6 +81,7 @@ class Net {
                 clearInterval(interval)
             }
             else if (data.status === 'lose') {
+                game.handleOpponentMove(data.checkerId, data.steps, data.checkerIds)
                 clearInterval(interval)
                 ui.displayLose()
             }

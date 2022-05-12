@@ -16,6 +16,7 @@ class Game {
     selectedChecker
     moves
     sequence = null
+    preventMove = false
 
     constructor() {
         this.renderer.setClearColor(0x333333);
@@ -91,7 +92,7 @@ class Game {
     }
 
     handleClick(e) {
-        if (document.getElementById('cover'))
+        if (document.getElementById('cover') || this.preventMove)
             return
         const intersects = this.raycaster.getIntersects(e, this.myCheckers.children)
         if (intersects.length > 0) {
@@ -208,6 +209,7 @@ class Game {
     }
 
     async handleOpponentMove(checkerId, steps, checkerIds) {
+        this.preventMove = true
         const checkers = checkerIds.reduce((acc, row) => {
             return [...acc, row.map((e) => {
                 if (e === null)
@@ -250,6 +252,7 @@ class Game {
                 m.getChecker().changeToKing()
         }
         this.checkers = checkers
+        this.preventMove = false
     }
 
     updateCheckers(oldPos, newPos) {
