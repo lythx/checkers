@@ -81,7 +81,7 @@ app.post('/reset', (req, res) => {
     checkerIds = null
     gameRunning = false
     newMove = false
-    timer = new Timer()
+    timer.resetTimer()
     res.send({ status: 'OK' })
 })
 
