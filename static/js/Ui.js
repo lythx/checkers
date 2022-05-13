@@ -50,12 +50,12 @@ class Ui {
     }
 
     yourMove() {
-        console.log('asdd')
         document.getElementById('cover').remove()
     }
 
     displayLose() {
-        document.getElementById('cover').remove()
+        if (document.getElementById('cover'))
+            document.getElementById('cover').remove()
         let cover = document.createElement('div')
         cover.id = 'cover'
         document.body.appendChild(cover)
@@ -65,7 +65,8 @@ class Ui {
     }
 
     displayWin() {
-        document.getElementById('cover').remove()
+        if (document.getElementById('cover'))
+            document.getElementById('cover').remove()
         let cover = document.createElement('div')
         cover.id = 'cover'
         document.body.appendChild(cover)

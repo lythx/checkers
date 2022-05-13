@@ -55,7 +55,7 @@ let winner
 let checkerIds
 let newMove = false
 let gameRunning = false
-const timer = new Timer()
+let timer = new Timer()
 
 app.post('/addlogin', (req, res) => {
     if (players.length > 1) {
@@ -81,6 +81,7 @@ app.post('/reset', (req, res) => {
     checkerIds = null
     gameRunning = false
     newMove = false
+    timer = new Timer()
     res.send({ status: 'OK' })
 })
 

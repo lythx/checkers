@@ -71,8 +71,10 @@ class Net {
             }
             else if (data.status === 'you')
                 ui.updateTimer(`${data.time}`)
-            else if (data.status === 'opponent')
+            else if (data.status === 'opponent') {
+                ui.updateTimer(`30`)
                 ui.updateCoverTimer(`${data.time}`)
+            }
             else if (data.status === 'win') {
                 clearInterval(interval)
                 ui.displayWin()
@@ -81,7 +83,6 @@ class Net {
                 clearInterval(interval)
             }
             else if (data.status === 'lose') {
-                game.handleOpponentMove(data.checkerId, data.steps, data.checkerIds)
                 clearInterval(interval)
                 ui.displayLose()
             }
